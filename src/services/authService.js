@@ -1,7 +1,7 @@
 import { delay } from './delay.js'
 import { donorProfile } from '../data/mock.js'
 import { readStorage, writeStorage } from './storage.js'
-import { backendConfigured, requireSupabase } from './supabase.js'
+import { backendConfigured, googleAuthConfigured, requireSupabase } from './supabase.js'
 
 const getAccounts = () => readStorage('accounts', [])
 const hashPassword = async (password) => {
@@ -12,6 +12,7 @@ const hashPassword = async (password) => {
 
 export const authService = {
   loginWithGoogle: async () => {
+    if (!googleAuthConfigured) throw new Error('Google sign-in is not enabled yet. Configure the Google provider in Supabase first.')
     const client = requireSupabase()
     const { error } = await client.auth.signInWithOAuth({
       provider: 'google',

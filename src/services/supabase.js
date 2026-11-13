@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 const environment = import.meta.env || {}
 const supabaseUrl = environment.VITE_SUPABASE_URL?.trim()
 const supabaseAnonKey = environment.VITE_SUPABASE_ANON_KEY?.trim()
+export const googleAuthConfigured = environment.VITE_GOOGLE_OAUTH_ENABLED === 'true'
 
 export const backendConfigured = Boolean(supabaseUrl && supabaseAnonKey)
 export const supabase = backendConfigured

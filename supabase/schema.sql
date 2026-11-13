@@ -1,6 +1,10 @@
 -- BloodBridge Supabase schema.
 -- Apply this file in the Supabase SQL editor before enabling the backend.
 
+-- Keep privileged trigger functions outside the exposed public API schema.
+create schema if not exists private;
+revoke all on schema private from public, anon, authenticated;
+
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   name text not null default '',
@@ -23,7 +27,7 @@ create policy "profile owner can read" on public.profiles for select to authenti
 drop policy if exists "profile owner can update" on public.profiles;
 create policy "profile owner can update" on public.profiles for update to authenticated using ((select auth.uid()) = id) with check ((select auth.uid()) = id);
 
-create or replace function public.create_profile_for_new_user()
+create or replace function private.create_profile_for_new_user()
 returns trigger
 language plpgsql
 security definer
@@ -33,7 +37,7 @@ begin
   insert into public.profiles (id, name, email, blood_group)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data ->> 'full_name', new.raw_user_meta_data ->> 'name', split_part(new.email, '@', 1)),
+    coalesce(new.raw_user_meta_data ->> 'full_name', new.raw_user_meta_data ->> 'name', nullif(new.email, ''), 'BloodBridge donor'),
     coalesce(new.email, ''),
     case when new.raw_user_meta_data ->> 'blood_group' in ('A+','A-','B+','B-','AB+','AB-','O+','O-') then new.raw_user_meta_data ->> 'blood_group' else null end
   )
@@ -41,11 +45,12 @@ begin
   return new;
 end;
 $$;
+revoke all on function private.create_profile_for_new_user() from public, anon, authenticated;
 
 drop trigger if exists on_auth_user_created_bloodbridge on auth.users;
 create trigger on_auth_user_created_bloodbridge
 after insert on auth.users
-for each row execute procedure public.create_profile_for_new_user();
+for each row execute function private.create_profile_for_new_user();
 
 create table if not exists public.blood_banks (
   id text primary key,
@@ -119,7 +124,7 @@ create policy "users can read their notifications" on public.notifications for s
 drop policy if exists "users can mark their notifications read" on public.notifications;
 create policy "users can mark their notifications read" on public.notifications for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
 
-create or replace function public.notify_request_owner()
+create or replace function private.notify_request_owner()
 returns trigger
 language plpgsql
 security definer
@@ -131,11 +136,12 @@ begin
   return new;
 end;
 $$;
+revoke all on function private.notify_request_owner() from public, anon, authenticated;
 
 drop trigger if exists on_blood_request_created on public.requests;
 create trigger on_blood_request_created
 after insert on public.requests
-for each row execute procedure public.notify_request_owner();
+for each row execute function private.notify_request_owner();
 
 create table if not exists public.donations (
   id uuid primary key default gen_random_uuid(),
@@ -154,5 +160,6 @@ drop policy if exists "users can read their donation history" on public.donation
 create policy "users can read their donation history" on public.donations for select to authenticated using ((select auth.uid()) = user_id);
 
 create index if not exists requests_created_at_idx on public.requests (created_at desc);
+create index if not exists requests_created_by_idx on public.requests (created_by);
 create index if not exists notifications_user_read_created_idx on public.notifications (user_id, read, created_at desc);
 create index if not exists donations_user_donated_on_idx on public.donations (user_id, donated_on desc);

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { BLOOD_GROUPS } from '../data/mock'
 import { authService } from '../services/authService'
-import { backendConfigured } from '../services/supabase'
+import { backendConfigured, googleAuthConfigured } from '../services/supabase'
 import { useAuth } from '../auth/AuthContext'
 import { BloodGroupSelect, ErrorState, Field, Success } from '../components/ui'
 
@@ -61,11 +61,11 @@ export default function Auth({ mode }) {
     <div className="page max-w-md">
       <h1 className="text-2xl font-semibold">{isRegister ? 'Create your account' : 'Log in'}</h1>
       {!backendConfigured && <p className="mt-5 rounded-md bg-amber-50 p-3 text-sm text-amber-900">Preview mode: accounts and changes stay in this browser. Google sign-in and shared accounts will work after the backend is connected.</p>}
-      {backendConfigured && <p className="mt-3 text-sm text-slate-600">Use your Google account or your confirmed email address.</p>}
-      <button type="button" className="btn-secondary mt-5 w-full" onClick={signInGoogle} disabled={busy || !backendConfigured}>
+      {backendConfigured && <p className="mt-3 text-sm text-slate-600">{googleAuthConfigured ? 'Use your Google account or your confirmed email address.' : 'Email sign-in is ready. Google sign-in will appear after the Google provider is configured.'}</p>}
+      <button type="button" className="btn-secondary mt-5 w-full" onClick={signInGoogle} disabled={busy || !backendConfigured || !googleAuthConfigured}>
         {busy ? 'Please wait…' : 'Continue with Google'}
       </button>
-      {!backendConfigured && <p className="mt-2 text-xs text-slate-500">Google sign-in is unavailable until the Supabase project and Google provider are configured.</p>}
+      {!googleAuthConfigured && <p className="mt-2 text-xs text-slate-500">Google sign-in is unavailable until the Google provider is configured and enabled for this deployment.</p>}
       <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-wide text-slate-400"><span className="h-px flex-1 bg-slate-200" />or use email<span className="h-px flex-1 bg-slate-200" /></div>
       {successMessage && <div className="mb-4"><Success>{successMessage}</Success></div>}
       {errorMessage && <div className="mb-4"><ErrorState message={errorMessage} /></div>}

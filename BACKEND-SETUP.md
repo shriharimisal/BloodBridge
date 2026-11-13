@@ -1,6 +1,6 @@
 # BloodBridge backend setup
 
-The site is hosted on Vercel. Supabase provides Google/email authentication and the shared Postgres data API. The browser only receives the public Supabase URL and anon key; database row policies protect user data.
+The site is hosted on Vercel. Supabase provides email authentication and the shared Postgres data API. Google sign-in is available after its provider is configured. The browser only receives the public Supabase URL and publishable key; database row policies protect user data.
 
 ## 1. Create the Supabase database
 
@@ -19,7 +19,7 @@ https://bloodbridge-seven.vercel.app
 Add these redirect URLs:
 
 ```text
-https://bloodbridge-seven.vercel.app/**
+https://bloodbridge-seven.vercel.app
 http://localhost:5173/**
 ```
 
@@ -30,11 +30,14 @@ In the BloodBridge Vercel project, add the following variables to Production, Pr
 ```text
 VITE_SUPABASE_URL
 VITE_SUPABASE_ANON_KEY
+VITE_GOOGLE_OAUTH_ENABLED
 ```
 
-The anon key is intended for browser use and is limited by the database policies in `supabase/schema.sql`. Never add the `service_role` key to a `VITE_` variable or commit secrets to GitHub. Redeploy after saving the variables.
+Use the project URL and publishable key from Supabase **Project Settings → API**. The current app reads the publishable key through `VITE_SUPABASE_ANON_KEY`; despite that variable name, a Supabase `sb_publishable_...` key is supported. Set `VITE_GOOGLE_OAUTH_ENABLED` to `true` only after Google is enabled in Supabase. Add all variables to Production, Preview, and Development, then redeploy.
 
-For local development, copy `.env.example` to `.env.local` and fill the same two public values. Add the localhost redirect URL in Supabase.
+The publishable key is designed for browser use and is constrained by the database policies in `supabase/schema.sql`. Never put a Supabase secret/service-role key or Google client secret in a `VITE_` variable or commit secrets to GitHub.
+
+For local development, copy `.env.example` to `.env.local` and fill the public values. Set `VITE_GOOGLE_OAUTH_ENABLED=true` only after Google is configured. Add the localhost redirect URL in Supabase.
 
 ## Connected features
 
@@ -45,4 +48,4 @@ For local development, copy `.env.example` to `.env.local` and fill the same two
 - User-specific notification list and mark-as-read action
 - User-specific donation history
 
-The app keeps its browser-only preview mode when the Supabase variables are absent. In that mode, Google sign-in is disabled and changes do not sync between browsers. The seeded blood bank contact information and stock values are examples, not verified live data. Requests are user-submitted and unverified; contact the hospital or blood bank to confirm details.
+The app keeps its browser-only preview mode when the Supabase variables are absent. In that mode, Google sign-in is disabled and changes do not sync between browsers. The Google button also stays disabled until `VITE_GOOGLE_OAUTH_ENABLED=true`. The seeded blood bank contact information and stock values are examples, not verified live data. Requests are user-submitted and unverified; contact the hospital or blood bank to confirm details.
