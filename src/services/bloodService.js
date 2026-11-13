@@ -4,7 +4,6 @@ import { backendConfigured, requireSupabase } from './supabase.js'
 
 export const stockLevel = (units) => (units === 0 ? 'Unavailable' : units < 5 ? 'Low' : 'Available')
 
-// TODO(backend): GET /blood/availability
 export const bloodService = {
   getAvailability: async () => {
     if (backendConfigured) {

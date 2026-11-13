@@ -4,7 +4,6 @@ import { readStorage, writeStorage } from './storage.js'
 import { backendConfigured, requireSupabase } from './supabase.js'
 import { currentUserId, mapProfile } from './backendHelpers.js'
 
-// TODO(backend): donor profile, availability and donation history endpoints.
 export const donorService = {
   getProfile: async () => {
     if (backendConfigured) {

@@ -6,7 +6,6 @@ import { currentUserId, mapRequest } from './backendHelpers.js'
 
 const getStore = () => readStorage('requests', requests)
 
-// TODO(backend): GET /requests and POST /requests
 export const requestService = {
   list: async ({ group = '', urgency = '', status = '' } = {}) => {
     if (backendConfigured) {

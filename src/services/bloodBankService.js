@@ -3,7 +3,6 @@ import { bloodBanks } from '../data/mock.js'
 import { stockLevel } from './bloodService.js'
 import { backendConfigured, requireSupabase } from './supabase.js'
 
-// TODO(backend): GET /blood-banks and GET /blood-banks/:id
 export const bloodBankService = {
   search: ({ group = '', location = '', radius = '', name = '', availability = '' } = {}) => {
     if (backendConfigured) return (async () => {

@@ -15,7 +15,9 @@ export const authService = {
     const client = requireSupabase()
     const { error } = await client.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/#/dashboard`, queryParams: { prompt: 'select_account' } },
+      // Keep the Supabase OAuth code on the URL query string. HashRouter owns the
+      // fragment, so redirecting to /#/dashboard can hide the callback code.
+      options: { redirectTo: window.location.origin, queryParams: { prompt: 'select_account' } },
     })
     if (error) throw error
   },

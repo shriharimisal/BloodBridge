@@ -4,7 +4,6 @@ import { readStorage, writeStorage } from './storage.js'
 import { backendConfigured, requireSupabase } from './supabase.js'
 import { currentUserId } from './backendHelpers.js'
 
-// TODO(backend): GET /notifications, PATCH /notifications/read
 export const notificationService = {
   list: async () => {
     if (backendConfigured) {
