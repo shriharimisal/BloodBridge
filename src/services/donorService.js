@@ -34,6 +34,25 @@ export const donorService = {
     }
     return delay(readStorage('donations', donations))
   },
+  recordDonation: async ({ donatedOn, bloodBankName, donationType, units }) => {
+    if (backendConfigured) {
+      const { error } = await requireSupabase().from('donations').insert({
+        donated_on: donatedOn,
+        blood_bank_name: bloodBankName.trim(),
+        donation_type: donationType,
+        units,
+      })
+      if (error) throw error
+      return { ok: true }
+    }
+    const donation = { id: `local-${Date.now()}`, donatedOn, date: donatedOn, place: bloodBankName.trim(), type: donationType, units }
+    const history = readStorage('donations', donations)
+    if (!writeStorage('donations', [donation, ...history])) throw new Error('Could not save donation report.')
+    const profile = readStorage('profile', donorProfile)
+    const nextProfile = { ...profile, donationCount: Number(profile.donationCount || 0) + 1, lastDonation: new Date(`${donatedOn}T00:00:00`).toLocaleDateString() }
+    if (!writeStorage('profile', nextProfile)) throw new Error('Could not update donor summary.')
+    return delay({ ok: true }, 150)
+  },
   saveProfile: async (data) => {
     if (backendConfigured) {
       const userId = await currentUserId()

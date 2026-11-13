@@ -10,7 +10,6 @@ import Donate from '../pages/Donate'
 import BloodBanks from '../pages/BloodBanks'
 import BloodBankDetail from '../pages/BloodBankDetail'
 import Auth from '../pages/Auth'
-import Dashboard from '../pages/Dashboard'
 import Notifications from '../pages/Notifications'
 import History from '../pages/History'
 import Settings from '../pages/Settings'
@@ -29,7 +28,7 @@ function GuestOnly({ children }) {
   const { session, loading } = useAuth()
   if (loading) return <Loading label="Checking your sign-in…" />
   return session
-    ? <Navigate to={location.state?.from || '/dashboard'} replace />
+    ? <Navigate to={location.state?.from || '/'} replace />
     : children
 }
 
@@ -46,7 +45,7 @@ export default function AppRoutes() {
         <Route path="blood-banks/:id" element={<BloodBankDetail />} />
         <Route path="login" element={<GuestOnly><Auth mode="login" /></GuestOnly>} />
         <Route path="register" element={<GuestOnly><Auth mode="register" /></GuestOnly>} />
-        <Route path="dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+        <Route path="dashboard" element={<Navigate to="/" replace />} />
         <Route path="notifications" element={<RequireAuth><Notifications /></RequireAuth>} />
         <Route path="history" element={<RequireAuth><History /></RequireAuth>} />
         <Route path="settings" element={<RequireAuth><Settings /></RequireAuth>} />

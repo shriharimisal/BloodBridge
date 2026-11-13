@@ -37,7 +37,7 @@ export default function Auth({ mode }) {
         return
       }
       await refresh()
-      nav(location.state?.from || '/dashboard', { replace: true })
+      nav(location.state?.from || '/', { replace: true })
     } catch (error) {
       setErrorMessage(error?.message || 'Something went wrong. Please try again.')
     } finally {

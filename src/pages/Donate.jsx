@@ -12,6 +12,9 @@ export default function Donate() {
   const [status, setStatus] = useState(null)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState(false)
+  const [report, setReport] = useState({ donatedOn: new Date().toLocaleDateString('en-CA'), bloodBankName: '', donationType: 'Whole blood', units: '1' })
+  const [reportState, setReportState] = useState('')
+  const [reportError, setReportError] = useState('')
   const current = status || profile.data?.status
   const toggle = async () => {
     const next = current === 'Available' ? 'Unavailable' : 'Available'
@@ -19,6 +22,23 @@ export default function Donate() {
     try { await donorService.setAvailability(next); setStatus(next) }
     catch { setSaveError(true) }
     finally { setSaving(false) }
+  }
+  const submitDonation = async (event) => {
+    event.preventDefault()
+    setReportState(''); setReportError('')
+    const units = Number(report.units)
+    if (!report.bloodBankName.trim()) { setReportError('Enter the blood bank or donation center name.'); return }
+    if (!Number.isInteger(units) || units < 1 || units > 10) { setReportError('Enter a whole number of units from 1 to 10.'); return }
+    if (!report.donatedOn || report.donatedOn > new Date().toLocaleDateString('en-CA')) { setReportError('Choose today or an earlier donation date.'); return }
+    setSaving(true)
+    try {
+      await donorService.recordDonation({ ...report, bloodBankName: report.bloodBankName.trim(), units })
+      setReportState('Donation report saved. Community totals are aggregated; your donation history stays private.')
+      setReport({ donatedOn: new Date().toLocaleDateString('en-CA'), bloodBankName: '', donationType: 'Whole blood', units: '1' })
+      await profile.reload()
+    } catch {
+      setReportError('Could not save your donation report. Please try again.')
+    } finally { setSaving(false) }
   }
   return (
     <div className="page">
@@ -53,6 +73,19 @@ export default function Donate() {
           <p className="mt-3 text-xs text-slate-500">General guidance only. The blood bank will confirm your eligibility at donation.</p>
         </section>
       </div>
+      <section className="mt-10 max-w-2xl" aria-labelledby="record-donation">
+        <h2 id="record-donation" className="text-lg font-semibold">Report a completed donation</h2>
+        <p className="mt-1 text-sm text-slate-600">Record a donation you have already made. These reports update the community total and are self-reported.</p>
+        <form className="mt-4 grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 sm:grid-cols-2" onSubmit={submitDonation}>
+          <label className="text-sm font-medium text-slate-700">Donation date<input className="input mt-1 w-full" type="date" max={new Date().toLocaleDateString('en-CA')} value={report.donatedOn} onChange={(event) => setReport({ ...report, donatedOn: event.target.value })} required /></label>
+          <label className="text-sm font-medium text-slate-700">Blood bank or center<input className="input mt-1 w-full" value={report.bloodBankName} onChange={(event) => setReport({ ...report, bloodBankName: event.target.value })} maxLength={120} required /></label>
+          <label className="text-sm font-medium text-slate-700">Donation type<select className="input mt-1 w-full" value={report.donationType} onChange={(event) => setReport({ ...report, donationType: event.target.value })}><option>Whole blood</option><option>Platelets</option><option>Plasma</option></select></label>
+          <label className="text-sm font-medium text-slate-700">Units donated<input className="input mt-1 w-full" type="number" min="1" max="10" step="1" value={report.units} onChange={(event) => setReport({ ...report, units: event.target.value })} required /></label>
+          {reportError && <p role="alert" className="text-sm text-red-700 sm:col-span-2">{reportError}</p>}
+          {reportState && <p role="status" className="text-sm text-emerald-700 sm:col-span-2">{reportState}</p>}
+          <div className="sm:col-span-2"><button className="btn-primary" type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save donation report'}</button></div>
+        </form>
+      </section>
       <section className="mt-12" aria-labelledby="near">
         <h2 id="near" className="text-lg font-semibold">Nearby requests</h2>
         {nearby.loading && <Loading />}
