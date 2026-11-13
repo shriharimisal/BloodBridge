@@ -14,6 +14,7 @@ export default function BloodBankDetail() {
       {!loading && !error && !b && <div className="mt-6"><Empty title="Blood bank not found" /></div>}
       {b && (
         <>
+          <p className="mt-4 rounded-md bg-amber-50 p-3 text-sm text-amber-900">Example listing. Contact details and stock are not verified; call the blood bank to confirm.</p>
           <h1 className="mt-4 text-2xl font-semibold sm:text-3xl">{b.name}</h1>
           <dl className="mt-4 grid gap-x-8 text-sm sm:grid-cols-2">
             {[['Address', b.address], ['Distance', `${b.distance} km`], ['Hours', b.hours], ['Phone', b.phone]].map(([k, v]) => (

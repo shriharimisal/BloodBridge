@@ -33,7 +33,7 @@ export default function Settings() {
 
   const input = (id, label, props) => (
     <Field id={id} label={label} error={errors[id]}>
-      <input id={id} className="input" value={form[id]} onChange={set(id)} aria-invalid={!!errors[id]} aria-describedby={errors[id] ? `${id}-error` : undefined} {...props} />
+      <input id={id} className="input" value={form[id]} onChange={set(id)} disabled={loading || status === 'saving'} aria-invalid={!!errors[id]} aria-describedby={errors[id] ? `${id}-error` : undefined} {...props} />
     </Field>
   )
   return (
@@ -45,7 +45,7 @@ export default function Settings() {
         {input('name', 'Full name', { autoComplete: 'name' })}
         {input('phone', 'Phone', { type: 'tel', autoComplete: 'tel' })}
         {input('city', 'City', { autoComplete: 'address-level2' })}
-        <Field id="group" label="Blood group" error={errors.group}><BloodGroupSelect id="group" value={form.group} onChange={set('group')} groups={BLOOD_GROUPS} /></Field>
+        <Field id="group" label="Blood group" error={errors.group}><BloodGroupSelect id="group" value={form.group} onChange={set('group')} groups={BLOOD_GROUPS} disabled={loading || status === 'saving'} /></Field>
         {status === 'saved' && <Success>Your profile has been saved.</Success>}
         {status === 'error' && <ErrorState message="We could not save your profile." />}
         <button className="btn-primary" disabled={status === 'saving' || loading}>{status === 'saving' ? 'Saving…' : 'Save changes'}</button>

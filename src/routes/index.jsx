@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import Layout from '../components/Layout'
-import { authService } from '../services/authService'
+import { useAuth } from '../auth/AuthContext'
+import { Loading } from '../components/ui'
 import Home from '../pages/Home'
 import FindBlood from '../pages/FindBlood'
 import RequestBlood from '../pages/RequestBlood'
@@ -18,7 +19,9 @@ import NotFound from '../pages/NotFound'
 
 function RequireAuth({ children }) {
   const location = useLocation()
-  return authService.getSession() ? children : <Navigate to="/login" replace state={{ from: location.pathname }} />
+  const { session, loading } = useAuth()
+  if (loading) return <Loading label="Checking your sign-in…" />
+  return session ? children : <Navigate to="/login" replace state={{ from: `${location.pathname}${location.search}` }} />
 }
 
 export default function AppRoutes() {
@@ -27,9 +30,9 @@ export default function AppRoutes() {
       <Route element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="find-blood" element={<FindBlood />} />
-        <Route path="request" element={<RequestBlood />} />
+        <Route path="request" element={<RequireAuth><RequestBlood /></RequireAuth>} />
         <Route path="requests" element={<Requests />} />
-        <Route path="donate" element={<Donate />} />
+        <Route path="donate" element={<RequireAuth><Donate /></RequireAuth>} />
         <Route path="blood-banks" element={<BloodBanks />} />
         <Route path="blood-banks/:id" element={<BloodBankDetail />} />
         <Route path="login" element={<Auth mode="login" />} />

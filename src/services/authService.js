@@ -1,8 +1,8 @@
-import { delay } from './delay'
-import { donorProfile } from '../data/mock'
-import { readStorage, writeStorage } from './storage'
+import { delay } from './delay.js'
+import { donorProfile } from '../data/mock.js'
+import { readStorage, writeStorage } from './storage.js'
+import { backendConfigured, requireSupabase } from './supabase.js'
 
-// Browser-only demo authentication. Replace this service with a secure backend before production use.
 const getAccounts = () => readStorage('accounts', [])
 const hashPassword = async (password) => {
   const bytes = new TextEncoder().encode(password)
@@ -11,7 +11,20 @@ const hashPassword = async (password) => {
 }
 
 export const authService = {
+  loginWithGoogle: async () => {
+    const client = requireSupabase()
+    const { error } = await client.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/#/dashboard`, queryParams: { prompt: 'select_account' } },
+    })
+    if (error) throw error
+  },
   login: async ({ email, password }) => {
+    if (backendConfigured) {
+      const { data, error } = await requireSupabase().auth.signInWithPassword({ email: email.trim(), password })
+      if (error) throw error
+      return data.user
+    }
     const account = getAccounts().find((item) => item.email === email.trim().toLowerCase())
     if (!account || account.passwordHash !== await hashPassword(password)) throw new Error('Email or password is incorrect.')
     const session = { name: account.name, email: account.email }
@@ -19,19 +32,30 @@ export const authService = {
     return delay(session, 150)
   },
   register: async ({ name, email, password, group }) => {
+    if (backendConfigured) {
+      const { data, error } = await requireSupabase().auth.signUp({
+        email: email.trim().toLowerCase(), password,
+        options: { emailRedirectTo: `${window.location.origin}/`, data: { full_name: name.trim(), blood_group: group } },
+      })
+      if (error) throw error
+      return { user: data.user, needsEmailConfirmation: !data.session }
+    }
     const accounts = getAccounts()
     const normalizedEmail = email.trim().toLowerCase()
     if (accounts.some((item) => item.email === normalizedEmail)) throw new Error('An account with this email already exists in this browser.')
     const account = { name: name.trim(), email: normalizedEmail, passwordHash: await hashPassword(password), group }
     if (!writeStorage('accounts', [...accounts, account])) throw new Error('Could not save this demo account.')
     const profile = { ...donorProfile, name: account.name, email: account.email, bloodGroup: group }
-    if (!writeStorage('profile', profile) || !writeStorage('session', { name: account.name, email: account.email })) {
-      throw new Error('Could not save the demo profile.')
-    }
+    if (!writeStorage('profile', profile) || !writeStorage('session', { name: account.name, email: account.email })) throw new Error('Could not save the demo profile.')
     return delay({ name: account.name, email: account.email }, 150)
   },
   getSession: () => readStorage('session', null),
-  logout: () => {
+  logout: async () => {
+    if (backendConfigured) {
+      const { error } = await requireSupabase().auth.signOut()
+      if (error) throw error
+      return
+    }
     try { window.localStorage.removeItem('bloodbridge.demo.session') } catch { /* Browser storage may be unavailable. */ }
   },
 }

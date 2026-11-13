@@ -9,6 +9,7 @@ export default function About() {
         <p>BloodBridge helps people find blood quickly and helps willing donors know where they are needed.</p>
         <p>Search nearby blood banks, post an emergency request, or register as a donor. Every request shows the blood group, units, hospital and urgency so people can act fast.</p>
         <p>BloodBridge does not replace medical care. In an emergency, contact your hospital or local emergency services first.</p>
+        <p>Sample blood bank names, phone numbers and stock figures are for preview only. They must be replaced with verified listings before public use.</p>
       </div>
       <Link to="/register" className="btn-primary mt-8">Become a Donor</Link>
     </div>

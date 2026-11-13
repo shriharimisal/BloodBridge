@@ -11,6 +11,7 @@ export default function Requests() {
   return (
     <div className="page">
       <PageHeader title="Emergency Requests">People currently looking for blood.</PageHeader>
+      <p className="mb-5 rounded-md bg-amber-50 p-3 text-sm text-amber-900">Requests are user-submitted and have not been verified. Confirm details with the hospital.</p>
       <div className="grid gap-4 sm:grid-cols-4">
         <Field id="fg" label="Blood group"><BloodGroupSelect id="fg" value={f.group} onChange={set('group')} groups={BLOOD_GROUPS} placeholder="All" /></Field>
         <Field id="fu" label="Urgency"><BloodGroupSelect id="fu" value={f.urgency} onChange={set('urgency')} groups={URGENCY} placeholder="All" /></Field>

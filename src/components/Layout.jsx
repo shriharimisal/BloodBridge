@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Bell, Droplet, Menu, X } from 'lucide-react'
-import { authService } from '../services/authService'
+import { useAuth } from '../auth/AuthContext'
 
 const links = [
   ['/find-blood', 'Find Blood'],
@@ -14,12 +14,11 @@ const navClass = ({ isActive }) => `rounded px-2 py-1.5 text-sm ${isActive ? 'fo
 
 export default function Layout() {
   const [open, setOpen] = useState(false)
-  const [session, setSession] = useState(() => authService.getSession())
+  const { session, signOut } = useAuth()
   const { pathname } = useLocation()
   const navigate = useNavigate()
   useEffect(() => { setOpen(false); window.scrollTo(0, 0) }, [pathname])
-  useEffect(() => setSession(authService.getSession()), [pathname])
-  const logout = () => { authService.logout(); setSession(null); navigate('/') }
+  const logout = async () => { await signOut(); navigate('/') }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -53,7 +52,7 @@ export default function Layout() {
       <footer className="border-t border-slate-200 text-sm text-slate-500">
         <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-6 sm:flex-row sm:justify-between sm:px-6">
           <p>© 2026 BloodBridge</p>
-          <p>In a medical emergency, call your local emergency number first.</p>
+          <p>Sample information only. Confirm availability with the blood bank. In an emergency, contact local emergency services.</p>
         </div>
       </footer>
     </div>

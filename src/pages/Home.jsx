@@ -26,7 +26,7 @@ export default function Home() {
       <section className="border-t border-slate-200" aria-labelledby="avail">
         <div className="page">
           <h2 id="avail" className="text-xl font-semibold">Blood availability</h2>
-          <p className="mt-1 text-sm text-slate-500">Combined stock across listed blood banks.</p>
+          <p className="mt-1 text-sm text-slate-500">Sample stock for preview only. Call the blood bank to confirm availability.</p>
           {loading && <Loading />}
           {error && <ErrorState message={error} onRetry={reload} />}
           {data && (data.length === 0 ? <Empty title="No availability data" /> : (

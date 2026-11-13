@@ -11,13 +11,17 @@ export default function RequestBlood() {
   const [form, setForm] = useState({ patient: '', group: params.get('group') || '', units: '', hospital: params.get('bank') || '', location: '', requiredBy: '', urgency: 'Urgent', contact: '', info: '' })
   const [errors, setErrors] = useState({})
   const [status, setStatus] = useState({ state: 'idle' })
-  const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
+  const set = (k) => (e) => {
+    const value = e.target.value
+    setForm((current) => ({ ...current, [k]: value }))
+    setErrors((current) => current[k] ? { ...current, [k]: undefined } : current)
+  }
 
   const validate = () => {
     const e = {}
     Object.keys(required).forEach((k) => { if (!String(form[k]).trim()) e[k] = required[k] })
     if (form.units && (!Number.isInteger(Number(form.units)) || form.units < 1 || form.units > 10)) e.units = required.units
-    if (form.requiredBy && new Date(form.requiredBy).getTime() <= Date.now()) e.requiredBy = 'Choose a future date and time.'
+    if (form.requiredBy && (!Number.isFinite(new Date(form.requiredBy).getTime()) || new Date(form.requiredBy).getTime() <= Date.now())) e.requiredBy = 'Choose a valid future date and time.'
     if (form.contact && !/^\d{10}$/.test(form.contact.replace(/[\s-]/g, ''))) e.contact = required.contact
     return e
   }

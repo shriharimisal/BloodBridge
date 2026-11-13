@@ -4,8 +4,14 @@
   "version": "0.1.0",
   "type": "module",
   "packageManager": "pnpm@11.25.0",
-  "scripts": { "dev": "node scripts/run-vite.mjs dev", "build": "node scripts/run-vite.mjs build", "preview": "node scripts/run-vite.mjs preview" },
+  "scripts": {
+    "dev": "node scripts/run-vite.mjs dev",
+    "build": "node scripts/run-vite.mjs build",
+    "preview": "node scripts/run-vite.mjs preview",
+    "test": "node --test"
+  },
   "dependencies": {
+    "@supabase/supabase-js": "^2.119.0",
     "lucide-react": "^0.462.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

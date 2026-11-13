@@ -10,6 +10,7 @@ export default function BloodBanks() {
   return (
     <div className="page">
       <PageHeader title="Blood Banks">Find a blood bank near you.</PageHeader>
+      <p className="mb-5 rounded-md bg-amber-50 p-3 text-sm text-amber-900">These are example listings with unverified contact and stock details. Confirm directly before travelling.</p>
       <label htmlFor="q" className="label">Search by name or location</label>
       <input id="q" type="search" className="input max-w-md" value={q} onChange={(e) => setQ(e.target.value)} />
       <section className="mt-8" aria-live="polite">

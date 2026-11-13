@@ -16,6 +16,7 @@ export default function FindBlood() {
   return (
     <div className="page">
       <PageHeader title="Find Blood">Search blood banks and hospitals by blood group and location.</PageHeader>
+      <p className="mb-5 rounded-md bg-amber-50 p-3 text-sm text-amber-900">Listings and stock figures are examples, not verified live supply. Call a blood bank before travelling.</p>
       <form onSubmit={(e) => { e.preventDefault(); setFilters(form) }} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Field id="group" label="Blood group"><BloodGroupSelect id="group" value={form.group} onChange={set('group')} groups={BLOOD_GROUPS} placeholder="Any" /></Field>
         <Field id="location" label="Location"><input id="location" className="input" value={form.location} onChange={set('location')} placeholder="Area or city" /></Field>
