@@ -17,8 +17,18 @@ export default function Layout() {
   const { session, signOut } = useAuth()
   const { pathname } = useLocation()
   const navigate = useNavigate()
+  const isAuthPage = pathname === '/login' || pathname === '/register'
+
   useEffect(() => { setOpen(false); window.scrollTo(0, 0) }, [pathname])
-  const logout = async () => { await signOut(); navigate('/') }
+
+  const logout = async () => {
+    await signOut()
+    navigate('/')
+  }
+
+  const accountControl = session
+    ? <button type="button" onClick={logout} className="btn-secondary !py-1.5">Log out</button>
+    : <Link to="/login" className="btn-secondary !py-1.5">Log in</Link>
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -33,7 +43,7 @@ export default function Layout() {
           <div className="hidden items-center gap-3 lg:flex">
             <Link to="/notifications" aria-label="Notifications" className="rounded p-1.5 text-slate-600 hover:text-brand"><Bell className="h-5 w-5" /></Link>
             <NavLink to="/dashboard" className={navClass}>Dashboard</NavLink>
-            {session ? <button type="button" onClick={logout} className="btn-secondary !py-1.5">Log out</button> : <Link to="/login" className="btn-secondary !py-1.5">Log in</Link>}
+            {!isAuthPage && accountControl}
           </div>
           <button className="rounded p-2 lg:hidden" aria-label="Menu" aria-expanded={open} aria-controls="mobile-nav" onClick={() => setOpen(!open)}>
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -41,10 +51,14 @@ export default function Layout() {
         </div>
         {open && (
           <nav id="mobile-nav" aria-label="Mobile" className="flex flex-col gap-1 border-t border-slate-200 px-4 py-3 lg:hidden">
-            {[...links, ['/dashboard', 'Dashboard'], ['/notifications', 'Notifications'], [session ? '/' : '/login', session ? 'Log out' : 'Log in']].map(([to, label]) => (
-              label === 'Log out' ? <button key="logout" type="button" onClick={logout} className="rounded px-2 py-2.5 text-left text-sm text-slate-700">Log out</button> :
+            {[...links, ['/dashboard', 'Dashboard'], ['/notifications', 'Notifications']].map(([to, label]) => (
               <NavLink key={to} to={to} className={({ isActive }) => `rounded px-2 py-2.5 text-sm ${isActive ? 'font-semibold text-brand' : 'text-slate-700'}`}>{label}</NavLink>
             ))}
+            {!isAuthPage && (
+              session
+                ? <button type="button" onClick={logout} className="rounded px-2 py-2.5 text-left text-sm text-slate-700">Log out</button>
+                : <NavLink to="/login" className="rounded px-2 py-2.5 text-sm text-slate-700">Log in</NavLink>
+            )}
           </nav>
         )}
       </header>

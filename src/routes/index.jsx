@@ -24,6 +24,15 @@ function RequireAuth({ children }) {
   return session ? children : <Navigate to="/login" replace state={{ from: `${location.pathname}${location.search}` }} />
 }
 
+function GuestOnly({ children }) {
+  const location = useLocation()
+  const { session, loading } = useAuth()
+  if (loading) return <Loading label="Checking your sign-in…" />
+  return session
+    ? <Navigate to={location.state?.from || '/dashboard'} replace />
+    : children
+}
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -35,8 +44,8 @@ export default function AppRoutes() {
         <Route path="donate" element={<RequireAuth><Donate /></RequireAuth>} />
         <Route path="blood-banks" element={<BloodBanks />} />
         <Route path="blood-banks/:id" element={<BloodBankDetail />} />
-        <Route path="login" element={<Auth mode="login" />} />
-        <Route path="register" element={<Auth mode="register" />} />
+        <Route path="login" element={<GuestOnly><Auth mode="login" /></GuestOnly>} />
+        <Route path="register" element={<GuestOnly><Auth mode="register" /></GuestOnly>} />
         <Route path="dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
         <Route path="notifications" element={<RequireAuth><Notifications /></RequireAuth>} />
         <Route path="history" element={<RequireAuth><History /></RequireAuth>} />
