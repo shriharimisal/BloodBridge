@@ -1,0 +1,21 @@
+{
+  "name": "bloodbridge",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "packageManager": "pnpm@11.25.0",
+  "scripts": { "dev": "node scripts/run-vite.mjs dev", "build": "node scripts/run-vite.mjs build", "preview": "node scripts/run-vite.mjs preview" },
+  "dependencies": {
+    "lucide-react": "^0.462.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16",
+    "vite": "^5.4.11"
+  }
+}
