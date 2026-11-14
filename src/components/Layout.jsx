@@ -3,7 +3,7 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-do
 import { Droplet, Menu, X } from 'lucide-react'
 import { useAuth } from '../auth/AuthContext'
 
-const navClass = ({ isActive }) => `rounded-xl px-3 py-2 text-sm font-semibold transition ${isActive ? 'bg-rose-50 text-brand' : 'text-slate-700 hover:bg-slate-50 hover:text-brand'}`
+const navClass = ({ isActive }) => `whitespace-nowrap rounded-xl px-2.5 py-2 text-[13px] font-semibold transition ${isActive ? 'bg-rose-50 text-brand' : 'text-slate-700 hover:bg-slate-50 hover:text-brand'}`
 
 export default function Layout() {
   const [open, setOpen] = useState(false)
@@ -11,10 +11,13 @@ export default function Layout() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const isAuthPage = pathname === '/login' || pathname === '/register'
-  const actions = [
-    ['/find-blood', 'Find Blood'],
-    [session ? '/donate' : '/register', 'Become Donor'],
-    ['/request', 'Request Blood'],
+  const sections = [
+    ['/', 'Dashboard'],
+    ['/inventory', 'Inventory'],
+    ['/dispatch', 'Dispatch'],
+    ['/transit', 'Transit'],
+    ['/notifications', 'Notification'],
+    ['/about', 'About'],
   ]
 
   useEffect(() => { setOpen(false); window.scrollTo(0, 0) }, [pathname])
@@ -35,18 +38,18 @@ export default function Layout() {
           <Link to="/" className="flex shrink-0 items-center gap-2 text-lg font-bold text-slate-900">
             <Droplet className="h-5 w-5 fill-brand text-brand" aria-hidden /> BloodBridge
           </Link>
-          <nav aria-label="Main actions" className="hidden items-center gap-2 lg:flex">
-            {actions.map(([to, label], index) => <NavLink key={label} to={to} className={index === 2 ? 'btn-primary !py-2' : navClass}>{label}</NavLink>)}
+          <nav aria-label="Main sections" className="hidden items-center gap-0.5 xl:flex">
+            {sections.map(([to, label]) => <NavLink key={label} to={to} end={to === '/'} className={navClass}>{label}</NavLink>)}
           </nav>
-          <div className="hidden items-center lg:flex">{!isAuthPage && accountControl}</div>
-          <button className="rounded-xl p-2 text-slate-700 hover:bg-slate-100 lg:hidden" aria-label="Menu" aria-expanded={open} aria-controls="mobile-nav" onClick={() => setOpen(!open)}>
+          <div className="hidden items-center xl:flex">{!isAuthPage && accountControl}</div>
+          <button className="rounded-xl p-2 text-slate-700 hover:bg-slate-100 xl:hidden" aria-label="Menu" aria-expanded={open} aria-controls="mobile-nav" onClick={() => setOpen(!open)}>
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
         {open && (
-          <nav id="mobile-nav" aria-label="Main actions" className="flex flex-col gap-1 border-t border-slate-200 bg-white px-4 py-3 lg:hidden">
-            {actions.map(([to, label]) => <NavLink key={label} to={to} className={({ isActive }) => `rounded-xl px-3 py-2.5 text-sm font-semibold ${isActive ? 'bg-rose-50 text-brand' : 'text-slate-700'}`}>{label}</NavLink>)}
-            {!isAuthPage && <div className="mt-2 border-t border-slate-100 pt-2">{session ? <button type="button" onClick={logout} className="w-full rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-slate-700">Log out</button> : <Link to="/login" className="block rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700">Log in</Link>}</div>}
+          <nav id="mobile-nav" aria-label="Main sections" className="grid grid-cols-2 gap-1 border-t border-slate-200 bg-white px-4 py-3 sm:grid-cols-3 xl:hidden">
+            {sections.map(([to, label]) => <NavLink key={label} to={to} end={to === '/'} className={({ isActive }) => `rounded-xl px-3 py-2.5 text-sm font-semibold ${isActive ? 'bg-rose-50 text-brand' : 'text-slate-700'}`}>{label}</NavLink>)}
+            {!isAuthPage && <div className="col-span-2 mt-2 border-t border-slate-100 pt-2 sm:col-span-3">{session ? <button type="button" onClick={logout} className="w-full rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-slate-700">Log out</button> : <Link to="/login" className="block rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700">Log in</Link>}</div>}
           </nav>
         )}
       </header>

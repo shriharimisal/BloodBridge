@@ -15,6 +15,9 @@ import History from '../pages/History'
 import Settings from '../pages/Settings'
 import About from '../pages/About'
 import NotFound from '../pages/NotFound'
+import Inventory from '../pages/Inventory'
+import Dispatch from '../pages/Dispatch'
+import Transit from '../pages/Transit'
 
 function RequireAuth({ children }) {
   const location = useLocation()
@@ -37,6 +40,9 @@ export default function AppRoutes() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<Home />} />
+        <Route path="inventory" element={<Inventory />} />
+        <Route path="dispatch" element={<Dispatch />} />
+        <Route path="transit" element={<Transit />} />
         <Route path="find-blood" element={<FindBlood />} />
         <Route path="request" element={<RequireAuth><RequestBlood /></RequireAuth>} />
         <Route path="requests" element={<Requests />} />
@@ -46,7 +52,7 @@ export default function AppRoutes() {
         <Route path="login" element={<GuestOnly><Auth mode="login" /></GuestOnly>} />
         <Route path="register" element={<GuestOnly><Auth mode="register" /></GuestOnly>} />
         <Route path="dashboard" element={<Navigate to="/" replace />} />
-        <Route path="notifications" element={<RequireAuth><Notifications /></RequireAuth>} />
+        <Route path="notifications" element={<Notifications />} />
         <Route path="history" element={<RequireAuth><History /></RequireAuth>} />
         <Route path="settings" element={<RequireAuth><Settings /></RequireAuth>} />
         <Route path="about" element={<About />} />
